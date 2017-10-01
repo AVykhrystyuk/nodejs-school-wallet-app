@@ -10,7 +10,7 @@ const {
 const cardValidator = new CardValidator();
 const postFields = ['cardNumber', 'balance'];
 
-module.exports = async(ctx) => {
+module.exports = async ctx => {
 	const card = _.pick(ctx.request.body, postFields);
 
 	const validationErrors = cardValidator.validate(card);

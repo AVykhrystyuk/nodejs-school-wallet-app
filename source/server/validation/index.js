@@ -1,5 +1,9 @@
+const validateRequiredFields = require('./validate-required-fields');
+const CardValidator = require('./card-validator');
+const TransactionValidator = require('./transaction-validator');
+
 module.exports = {
-    validateRequiredFields: require('./validate-required-fields'),
-    CardValidator: require('./card-validator'),
-    TransactionValidator: require('./transaction-validator')
+	validateRequiredFields,
+	CardValidator,
+	TransactionValidator
 };

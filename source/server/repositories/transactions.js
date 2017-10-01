@@ -20,7 +20,7 @@ class TransactionsRepository extends FileRepository {
 		await this._saveUpdates(transactions);
 		return newTransaction;
 	}
-	
+
 	async get(id) {
 		const transactions = await this.getAll();
 		return transactions.find(t => t.id === id);

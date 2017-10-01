@@ -1,6 +1,6 @@
 'use strict';
 
 module.exports = (obj, requiredFields) => {
-    const missingFields = requiredFields.filter(field => !obj.hasOwnProperty(field));
-    return missingFields;
-}
+	const missingFields = requiredFields.filter(field => !Object.prototype.hasOwnProperty.call(obj, field));
+	return missingFields;
+};

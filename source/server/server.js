@@ -1,7 +1,7 @@
 'use strict';
 
 const Koa = require('koa');
-const serve = require('koa-static');
+// const serve = require('koa-static');
 const router = require('koa-router')();
 const bodyParser = require('koa-bodyparser')();
 
@@ -33,7 +33,7 @@ router.post('/cards/:id/transactions', createCardTransactionsController);
 router.all('/error', errorController);
 
 // logger
-server.use(async function (ctx, next) {
+server.use(async (ctx, next) => {
 	const start = new Date();
 	await next();
 	const ms = new Date() - start;
@@ -41,7 +41,7 @@ server.use(async function (ctx, next) {
 });
 
 // error handler
-server.use(async(ctx, next) => {
+server.use(async (ctx, next) => {
 	try {
 		await next();
 	} catch (err) {
@@ -51,7 +51,7 @@ server.use(async(ctx, next) => {
 	}
 });
 
-server.use(async(ctx, next) => {
+server.use(async (ctx, next) => {
 	ctx.cardsRepository = new CardsRepository();
 	ctx.transactionsRepository = new TransactionsRepository();
 	await next();
@@ -59,7 +59,7 @@ server.use(async(ctx, next) => {
 
 server.use(bodyParser);
 server.use(router.routes());
-//app.use(serve('./public'));
+// app.use(serve('./public'));
 
 const port = process.env.PORT || 3000;
 server.listen(port, () => {

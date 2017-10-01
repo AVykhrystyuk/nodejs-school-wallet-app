@@ -1,4 +1,7 @@
+const FileRepository = require('./file-repository');
+const incrementId = require('./increment-id');
+
 module.exports = {
-    FileRepository: require('./file-repository'),
-    incrementId: require('./increment-id')
+	FileRepository,
+	incrementId
 };

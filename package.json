@@ -1,7 +1,7 @@
 {
   "name": "ym-wallet-app",
   "version": "1.0.0",
-  "description": "Проект «Мой кошелек»",
+  "description": "Course project for Yandex.Money Node.js school",
   "author": "",
   "scripts": {
     "start": "NODE_PATH=. node ./source/server/server.js",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/AVykhrystyuk/nodejs-school-wallet-app.git"
   },
   "license": "ISC",
   "engines": {
@@ -25,6 +25,10 @@
   },
   "devDependencies": {
     "eslint": "^4.7.2",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-react": "^7.4.0",
     "nodemon": "^1.12.1"
   }
 }

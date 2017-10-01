@@ -10,7 +10,7 @@ const {
 const transactionValidator = new TransactionValidator();
 const postFields = ['type', 'time', 'sum', 'data'];
 
-module.exports = async(ctx) => {
+module.exports = async ctx => {
 	const transaction = _.pick(ctx.request.body, postFields);
 	const cardId = Number(ctx.params.id);
 
