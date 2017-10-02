@@ -1,7 +1,7 @@
 'use strict';
 
 const Koa = require('koa');
-// const serve = require('koa-static');
+const serve = require('koa-static');
 const router = require('koa-router')();
 const bodyParser = require('koa-bodyparser')();
 
@@ -59,7 +59,7 @@ server.use(async (ctx, next) => {
 
 server.use(bodyParser);
 server.use(router.routes());
-// app.use(serve('./public'));
+server.use(serve('./build'));
 
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
