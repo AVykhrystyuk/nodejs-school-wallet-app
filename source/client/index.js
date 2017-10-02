@@ -2,6 +2,8 @@ import {
 	helloHandler
 } from './handlers';
 
+import './styles.scss';
+
 const component = () => {
 	const HELLO_NODE_SCHOOL_APP = 'Hello, Node School App!';
 	const element = document.createElement('div');
