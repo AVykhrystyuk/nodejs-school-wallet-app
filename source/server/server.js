@@ -6,6 +6,8 @@ const router = require('koa-router')();
 const bodyParser = require('koa-bodyparser')();
 const fs = require('fs');
 
+const logger = require('./libs/logger')('waller-app');
+
 const getAllCardsController = require('./controllers/cards/get-all');
 const createCardController = require('./controllers/cards/create');
 const deleteCardController = require('./controllers/cards/delete');
@@ -42,7 +44,7 @@ server.use(async (ctx, next) => {
 	const start = new Date();
 	await next();
 	const ms = new Date() - start;
-	console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
+	logger.log('info', `${ctx.method} ${ctx.url} - ${ms}ms`);
 });
 
 // error handler
@@ -50,7 +52,7 @@ server.use(async (ctx, next) => {
 	try {
 		await next();
 	} catch (err) {
-		console.log('Error detected', err);
+		logger.log('error', 'Error detected', err);
 		ctx.status = err instanceof ApplicationError ? err.status : 500;
 		ctx.body = err.message;
 	}
@@ -69,5 +71,5 @@ server.use(serve('./build'));
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
 	const url = `http://localhost:${port}`;
-	console.log(`Server is listening on port ${port} (${url})`);
+	logger.log('info', `Server is listening on port ${port} (${url})`);
 });
