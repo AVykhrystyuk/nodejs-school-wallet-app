@@ -4,6 +4,7 @@ const Koa = require('koa');
 const serve = require('koa-static');
 const router = require('koa-router')();
 const bodyParser = require('koa-bodyparser')();
+const fs = require('fs');
 
 const getAllCardsController = require('./controllers/cards/get-all');
 const createCardController = require('./controllers/cards/create');
@@ -22,6 +23,10 @@ const TransactionsRepository = require('./repositories/transactions');
 const server = new Koa();
 
 router.param('id', (id, ctx, next) => next());
+
+router.get('/', ctx => {
+	ctx.body = fs.readFileSync('./build/index.html', 'utf8');
+});
 
 router.get('/cards/', getAllCardsController);
 router.post('/cards/', createCardController);

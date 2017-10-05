@@ -5,7 +5,7 @@ const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const WebpackNotifierPlugin = require('webpack-notifier');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-// const CopyWebpackPlugin = require('copy-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const rootPath = require('./root-path');
 
@@ -38,7 +38,7 @@ function makeWebpackConfig(options) {
 
 	config.entry = {
 		app: './index.js',
-		vendor: './vendor/index.js',
+		// vendor: './vendor/index.js',
 	};
 
 	config.output = {
@@ -70,12 +70,12 @@ function getPlugins(options) {
 				new webpack.optimize.CommonsChunkPlugin({
 					name: ['app', 'vendor', 'polyfills']
 				}),
-
-				new CopyWebpackPlugin([{
-					from: './__copy-to-output__',
-					//to: "build"
-				}]),
 		*/
+		new CopyWebpackPlugin([{
+			from: './__copy-to-output__',
+			// to: "build"
+		}]),
+
 		new webpack.DefinePlugin({
 			'process.env': {
 				NODE_ENV: JSON.stringify(NODE_ENV)
@@ -112,13 +112,11 @@ function getPlugins(options) {
 
 function getAllModuleRules(options) {
 	const allModuleRules = [{
-		test: /\.js/,
+		test: /\.js$/,
 		exclude: /node_modules/,
 		use: [{
 			loader: 'babel-loader'
-		}, {
-			loader: 'eslint-loader'
-		}]
+		}/* , { loader: 'eslint-loader' } */]
 	}];
 
 	if (!options.isTest) {
@@ -130,8 +128,6 @@ function getAllModuleRules(options) {
 }
 
 function getStyleModuleRules(options) {
-	const extractedStyleRegex = /node_modules|source(\\|\/)client(\\|\/)vendor/;
-
 	const styleLoader = {
 		loader: 'style-loader'
 	};
@@ -149,7 +145,7 @@ function getStyleModuleRules(options) {
 		options: {
 			sourceMap: true,
 			config: {
-				path: './config/postcss.config.js'
+				path: root('config', 'postcss.config.js')
 			}
 		}
 	};
@@ -160,6 +156,8 @@ function getStyleModuleRules(options) {
 			sourceMap: true
 		}
 	};
+
+	const extractedStyleRegex = /node_modules|source(\\|\/)client(\\|\/)vendor/;
 
 	const appRules = [{
 		test: /\.css$/,
@@ -179,7 +177,7 @@ function getStyleModuleRules(options) {
 		test: /\.scss$/,
 		include: extractedStyleRegex,
 		use: options.plugins.extractCSS.extract([cssLoader, postCssLoader, sassLoader])
-	}]
+	}];
 
 	const allRules = [];
 	allRules.push(...appRules);
