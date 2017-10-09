@@ -31,6 +31,7 @@ module.exports = async ctx => {
 	}
 
 	const newTransaction = await ctx.transactionsRepository.add(transaction);
+
 	ctx.status = 201;
 	ctx.body = newTransaction;
 };

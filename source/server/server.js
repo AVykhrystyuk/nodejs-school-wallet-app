@@ -15,6 +15,8 @@ const deleteCardController = require('./controllers/cards/delete');
 const getAllCardTransactionsController = require('./controllers/transactions/get-all-for-card');
 const createCardTransactionsController = require('./controllers/transactions/create');
 
+const mobilePayController = require('./controllers/pay/mobile-pay');
+
 const errorController = require('./controllers/error');
 
 const ApplicationError = require('./errors/application-error');
@@ -36,6 +38,8 @@ router.delete('/cards/:id', deleteCardController);
 
 router.get('/cards/:id/transactions', getAllCardTransactionsController);
 router.post('/cards/:id/transactions', createCardTransactionsController);
+
+router.post('/cards/:id/pay', mobilePayController);
 
 router.all('/error', errorController);
 
