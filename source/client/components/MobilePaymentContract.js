@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'emotion/react';
 
+import {PaymentService} from '../services';
 import {Island, Title, Button, Input} from './';
 
 const MobilePaymentLayout = styled(Island)`
@@ -78,10 +79,12 @@ class MobilePaymentContract extends Component {
 		super(props);
 
 		this.state = {
-			phoneNumber: '+79218908064',
+			phoneNumber: '+7(952)-37-93-37-2',
 			sum: 0,
 			commission: 3
 		};
+
+		this._paymentService = new PaymentService();
 	}
 
 	/**
@@ -109,13 +112,17 @@ class MobilePaymentContract extends Component {
 		}
 
 		const {sum, phoneNumber, commission} = this.state;
-
-		const isNumber = !isNaN(parseFloat(sum)) && isFinite(sum);
-		if (!isNumber || sum === 0) {
+		const sumWithCommission = this.getSumWithCommission();
+		if (sumWithCommission <= 0) {
 			return;
 		}
 
-		this.props.onPaymentSuccess({sum, phoneNumber, commission});
+		const activeCard = this.props.activeCard;
+		this._paymentService.payMobile(activeCard.id, sumWithCommission, phoneNumber)
+			.then(createdTransaction => {
+				// TODO: activeCard.balance = (activeCard.balance - sumWithCommission).toString();
+				this.props.onPaymentSuccess({sum, phoneNumber, commission, createdTransaction});
+			});
 	}
 
 	/**
@@ -145,7 +152,7 @@ class MobilePaymentContract extends Component {
 
 		return (
 			<MobilePaymentLayout>
-				<form onSubmit={(event) => this.handleSubmit(event)}>
+				<form onSubmit={event => this.handleSubmit(event)}>
 					<MobilePaymentTitle>Пополнить телефон</MobilePaymentTitle>
 					<InputField>
 						<Label>Телефон</Label>
@@ -159,7 +166,7 @@ class MobilePaymentContract extends Component {
 						<InputSum
 							name='sum'
 							value={this.state.sum}
-							onChange={(event) => this.handleInputChange(event)} />
+							onChange={event => this.handleInputChange(event)} />
 						<Currency>₽</Currency>
 					</InputField>
 					<InputField>

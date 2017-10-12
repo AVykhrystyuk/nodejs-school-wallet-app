@@ -70,6 +70,15 @@ class App extends Component {
 	}
 
 	/**
+	 * Обработчик переключения карты
+	 *
+	 * @param {Number} activeCardIndex индекс выбранной карты
+	 */
+	onCardChange(activeCardIndex) {
+		this.setState({activeCardIndex});
+	}
+
+	/**
 	 * Подготавливает данные карт
 	 *
 	 * @param {Object} cardsData данные карт
@@ -99,15 +108,6 @@ class App extends Component {
 	}
 
 	/**
-	 * Обработчик переключения карты
-	 *
-	 * @param {Number} activeCardIndex индекс выбранной карты
-	 */
-	onCardChange(activeCardIndex) {
-		this.setState({activeCardIndex});
-	}
-
-	/**
 	 * Рендер компонента
 	 *
 	 * @override
@@ -117,15 +117,15 @@ class App extends Component {
 		const {cardsList, activeCardIndex, cardHistory} = this.state;
 		const activeCard = cardsList[activeCardIndex];
 
-		const inactiveCardsList = cardsList.filter((card, index) => index === activeCardIndex ? false : card);
-		const filteredHistory = cardHistory.filter((data) => data.cardId === activeCard.id);
+		const inactiveCardsList = cardsList.filter((card, index) => index !== activeCardIndex);
+		const filteredHistory = cardHistory.filter(data => data.cardId === activeCard.id);
 
 		return (
 			<Wallet>
 				<CardsBar
 					activeCardIndex={activeCardIndex}
 					cardsList={cardsList}
-					onCardChange={(activeCardIndex) => this.onCardChange(activeCardIndex)} />
+					onCardChange={newActiveCardIndex => this.onCardChange(newActiveCardIndex)} />
 				<CardPane>
 					<Header activeCard={activeCard} />
 					<Workspace>
@@ -133,13 +133,12 @@ class App extends Component {
 						<Prepaid
 							activeCard={activeCard}
 							inactiveCardsList={inactiveCardsList}
-							onCardChange={(newActiveCardIndex) => this.onCardChange(newActiveCardIndex)}
-						/>
-						<MobilePayment activeCard={activeCard} />
+							onCardChange={newActiveCardIndex => this.onCardChange(newActiveCardIndex)} />
+						<MobilePayment
+							activeCard={activeCard} />
 						<Withdraw
 							activeCard={activeCard}
-							inactiveCardsList={inactiveCardsList}
-						/>
+							inactiveCardsList={inactiveCardsList} />
 					</Workspace>
 				</CardPane>
 			</Wallet>

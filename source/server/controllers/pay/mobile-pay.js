@@ -4,10 +4,10 @@ const _ = require('lodash');
 
 const ApplicationError = require('../../errors/application-error');
 
-const postFields = ['amount'];
+const postFields = ['amount', 'phoneNumber'];
 
 module.exports = async ctx => {
-	const paymentData = _.pick(ctx.request.body, postFields);
+	const {amount, phoneNumber} = _.pick(ctx.request.body, postFields);
 	const cardId = Number(ctx.params.id);
 
 	const card = await ctx.cardsRepository.get(cardId);
@@ -15,18 +15,18 @@ module.exports = async ctx => {
 		throw new ApplicationError(`No card with id ${cardId}`, 404);
 	}
 
-	card.balance = (card.balance - paymentData.amount).toString();
+	card.balance = (card.balance - amount).toString();
 	await ctx.cardsRepository.update(card);
 
-	const newtransaction = {
+	const newTransaction = {
 		cardId,
 		type: 'paymentMobile',
-		data: '+7(952)37-97-37-2',
+		data: phoneNumber,
 		time: new Date().toISOString(),
-		sum: `-${paymentData.amount}`
+		sum: `-${amount}`
 	};
 
-	const newTransaction = await ctx.transactionsRepository.add(newtransaction);
+	const createdTransaction = await ctx.transactionsRepository.add(newTransaction);
 	ctx.status = 201;
-	ctx.body = newTransaction;
+	ctx.body = createdTransaction;
 };

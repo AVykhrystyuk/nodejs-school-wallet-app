@@ -57,7 +57,7 @@ class MobilePayment extends Component {
 		return (
 			<MobilePaymentContract
 				activeCard={activeCard}
-				onPaymentSuccess={(transaction) => this.onPaymentSuccess(transaction)} />
+				onPaymentSuccess={transaction => this.onPaymentSuccess(transaction)} />
 		);
 	}
 }

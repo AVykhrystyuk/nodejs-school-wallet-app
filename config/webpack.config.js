@@ -14,6 +14,7 @@ const rootDir = rootPath.dir;
 
 module.exports = env => {
 	const isProduction = env ? !!env.production : false;
+	// eslint-disable-next-line no-console
 	console.log(`webpack: isProduction = ${isProduction}`);
 
 	const options = {
