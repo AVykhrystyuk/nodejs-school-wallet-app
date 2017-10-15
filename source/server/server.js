@@ -8,14 +8,25 @@ const fs = require('fs');
 
 const logger = require('./libs/logger')('waller-app');
 
-const getAllCardsController = require('./controllers/cards/get-all');
-const createCardController = require('./controllers/cards/create');
-const deleteCardController = require('./controllers/cards/delete');
+const {
+	getAllCardsController,
+	createCardController,
+	deleteCardController
+} = require('./controllers/cards');
 
-const getAllCardTransactionsController = require('./controllers/transactions/get-all-for-card');
-const createCardTransactionsController = require('./controllers/transactions/create');
+const {
+	getAllCardTransactionsController,
+	createCardTransactionController,
+	getAllTransactionsController
+} = require('./controllers/transactions');
 
-const mobilePayController = require('./controllers/pay/mobile-pay');
+const {
+	mobileToCardController,
+	cardToCardController,
+	cardToMobileController
+} = require('./controllers/transfers');
+
+const { CardTransferService } = require('./services');
 
 const errorController = require('./controllers/error');
 
@@ -37,9 +48,13 @@ router.post('/cards/', createCardController);
 router.delete('/cards/:id', deleteCardController);
 
 router.get('/cards/:id/transactions', getAllCardTransactionsController);
-router.post('/cards/:id/transactions', createCardTransactionsController);
+router.post('/cards/:id/transactions', createCardTransactionController);
 
-router.post('/cards/:id/pay', mobilePayController);
+router.post('/cards/:id/transfer', cardToCardController);
+router.post('/cards/:id/pay', cardToMobileController);
+router.post('/cards/:id/fill', mobileToCardController);
+
+router.get('/transactions', getAllTransactionsController);
 
 router.all('/error', errorController);
 
@@ -65,6 +80,7 @@ server.use(async (ctx, next) => {
 server.use(async (ctx, next) => {
 	ctx.cardsRepository = new CardsRepository();
 	ctx.transactionsRepository = new TransactionsRepository();
+	ctx.cardTransferService = new CardTransferService(ctx.cardsRepository, ctx.transactionsRepository);
 	await next();
 });
 

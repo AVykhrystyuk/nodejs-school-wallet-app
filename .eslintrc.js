@@ -16,7 +16,7 @@ module.exports = {
 		"no-underscore-dangle": [2, {"allowAfterThis": true}],
 		"max-len": [2, 120, 4, {"ignoreUrls": true}],
 		"no-confusing-arrow": [2, {"allowParens": true}],
-		"object-curly-spacing": [2, "never"],
+		"object-curly-spacing": [2, "always"],
 
 		"import/no-extraneous-dependencies": 0,
 		"import/no-unresolved": 0,

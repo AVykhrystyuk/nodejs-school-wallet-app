@@ -24,9 +24,14 @@ class CardsRepository extends FileRepository {
 	async update(card) {
 		const cards = await this.getAll();
 		const cardIndex = cards.findIndex(с => с.id === card.id);
+		if (cardIndex < 0) {
+			return null;
+		}
+
 		cards[cardIndex] = card;
 
 		await this._saveUpdates(cards);
+		return card;
 	}
 
 	async get(id) {
