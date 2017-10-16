@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import styled from 'emotion/react';
-import {injectGlobal} from 'emotion';
+import { injectGlobal } from 'emotion';
 import CardInfo from 'card-info';
 import {
 	CardsBar,
@@ -13,10 +13,11 @@ import {
 
 import './fonts.css';
 
-import cardsData from '../../server/data/cards';
-import transactionsData from '../../server/data/transactions';
+import cardsData from '../../server/data/cards.json';
+import transactionsData from '../../server/data/transactions.json';
+import { CardsService, TransactionsService } from '../services';
 
-injectGlobal`
+injectGlobal([`
 	html,
 	body {
 		margin: 0;
@@ -27,7 +28,7 @@ injectGlobal`
 		font-family: 'Open Sans';
 		color: #000;
 	}
-`;
+`]);
 
 const Wallet = styled.div`
 	display: flex;
@@ -50,42 +51,8 @@ const Workspace = styled.div`
  * Приложение
  */
 class App extends Component {
-	/**
-	 * Конструктор
-	 */
-	constructor() {
-		super();
-
-		const cardsList = this.prepareCardsData(cardsData);
-		const cardHistory = transactionsData.map(data => {
-			const card = cardsList.find(c => c.id === data.cardId);
-			return card ? Object.assign({}, data, {card}) : data;
-		});
-
-		this.state = {
-			cardsList,
-			cardHistory,
-			activeCardIndex: 0
-		};
-	}
-
-	/**
-	 * Обработчик переключения карты
-	 *
-	 * @param {Number} activeCardIndex индекс выбранной карты
-	 */
-	onCardChange(activeCardIndex) {
-		this.setState({activeCardIndex});
-	}
-
-	/**
-	 * Подготавливает данные карт
-	 *
-	 * @param {Object} cardsData данные карт
-	 * @returns {Object[]}
-	 */
-	prepareCardsData(cardsData) {
-		return cardsData.map(card => {
+	static prepareCardList(cards) {
+		return cards.map(card => {
 			const cardInfo = new CardInfo(card.cardNumber, {
 				banksLogosPath: '/assets/',
 				brandsLogosPath: '/assets/'
@@ -107,6 +74,75 @@ class App extends Component {
 		});
 	}
 
+	static prepareHistory(cardsList, transactions) {
+		return transactions.map(transaction => {
+			const card = cardsList.find(item => item.id === Number(transaction.cardId));
+			return card
+				? Object.assign({}, transaction, { card })
+				: transaction;
+		});
+	}
+
+	constructor() {
+		super();
+
+		this.cardsService = new CardsService();
+		this.transactionsService = new TransactionsService();
+
+		const cardsList = App.prepareCardList(cardsData);
+		const cardHistory = App.prepareHistory(cardsList, transactionsData);
+
+		this.state = {
+			cardsList,
+			cardHistory,
+			activeCardIndex: 0,
+			removeCardId: 0,
+			isCardRemoving: false,
+			isCardsEditable: false
+		};
+	}
+
+	onCardChange(activeCardIndex) {
+		this.setState({ activeCardIndex });
+	}
+
+	onEditChange(isEditable) {
+		const isCardsEditable = !isEditable;
+		this.setState({
+			isCardsEditable,
+			isCardRemoving: false
+		});
+	}
+
+	onSuccessTransaction() {
+		this.cardsService.getAll().then(cards => {
+			const cardsList = App.prepareCardList(cards);
+			this.setState({ cardsList });
+
+			this.transactionsService.getAll().then(transactions => {
+				const cardHistory = App.prepareHistory(cardsList, transactions);
+				this.setState({ cardHistory });
+			});
+		});
+	}
+
+	onChangeBarMode(event, removeCardId) {
+		event.stopPropagation();
+		this.setState({
+			isCardRemoving: true,
+			removeCardId
+		});
+	}
+
+	deleteCard(cardId) {
+		this.cardsService.deleteCard(cardId).then(removedCard => {
+			this.cardsService.getAll().then(cards => {
+				const cardsList = App.prepareCardList(cards);
+				this.setState({ cardsList });
+			});
+		});
+	}
+
 	/**
 	 * Рендер компонента
 	 *
@@ -114,7 +150,7 @@ class App extends Component {
 	 * @returns {JSX}
 	 */
 	render() {
-		const {cardsList, activeCardIndex, cardHistory} = this.state;
+		const { cardsList, activeCardIndex, cardHistory, isCardsEditable, isCardRemoving, removeCardId } = this.state;
 		const activeCard = cardsList[activeCardIndex];
 
 		const inactiveCardsList = cardsList.filter((card, index) => index !== activeCardIndex);
@@ -124,8 +160,13 @@ class App extends Component {
 			<Wallet>
 				<CardsBar
 					activeCardIndex={activeCardIndex}
+					removeCardId={removeCardId}
 					cardsList={cardsList}
-					onCardChange={newActiveCardIndex => this.onCardChange(newActiveCardIndex)} />
+					onCardChange={index => this.onCardChange(index)}
+					isCardsEditable={isCardsEditable}
+					isCardRemoving={isCardRemoving}
+					deleteCard={index => this.deleteCard(index)}
+					onChangeBarMode={(event, index) => this.onChangeBarMode(event, index)} />
 				<CardPane>
 					<Header activeCard={activeCard} />
 					<Workspace>
@@ -133,12 +174,15 @@ class App extends Component {
 						<Prepaid
 							activeCard={activeCard}
 							inactiveCardsList={inactiveCardsList}
-							onCardChange={newActiveCardIndex => this.onCardChange(newActiveCardIndex)} />
+							onCardChange={newActiveCardIndex => this.onCardChange(newActiveCardIndex)}
+							onTransaction={() => this.onSuccessTransaction()} />
 						<MobilePayment
-							activeCard={activeCard} />
+							activeCard={activeCard}
+							onTransaction={() => this.onSuccessTransaction()} />
 						<Withdraw
 							activeCard={activeCard}
-							inactiveCardsList={inactiveCardsList} />
+							inactiveCardsList={inactiveCardsList}
+							onTransaction={() => this.onSuccessTransaction()} />
 					</Workspace>
 				</CardPane>
 			</Wallet>

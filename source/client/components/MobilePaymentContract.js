@@ -1,16 +1,16 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'emotion/react';
 
-import {PaymentService} from '../services';
-import {Island, Title, Button, Input} from './';
+import { PaymentService } from '../services';
+import { Island, Title, Button, Input } from './';
 
-const MobilePaymentLayout = styled(Island)`
+const MobilePaymentLayout = styled(Island) `
 	width: 440px;
 	background: #108051;
 `;
 
-const MobilePaymentTitle = styled(Title)`
+const MobilePaymentTitle = styled(Title) `
 	color: #fff;
 `;
 
@@ -48,19 +48,19 @@ const Underline = styled.div`
 	background-color: rgba(0, 0, 0, 0.16);
 `;
 
-const PaymentButton = styled(Button)`
+const PaymentButton = styled(Button) `
 	float: right;
 `;
 
-const InputPhoneNumber = styled(Input)`
+const InputPhoneNumber = styled(Input) `
 	width: 225px;
 `;
 
-const InputSum = styled(Input)`
+const InputSum = styled(Input) `
 	width: 160px;
 `;
 
-const InputCommision = styled(Input)`
+const InputCommision = styled(Input) `
 	cursor: no-drop;
 	width: 160px;
 	border: dotted 1.5px rgba(0, 0, 0, 0.2);
@@ -92,7 +92,7 @@ class MobilePaymentContract extends Component {
 	 * @returns {Number}
 	 */
 	getSumWithCommission() {
-		const {sum, commission} = this.state;
+		const { sum, commission } = this.state;
 
 		const isNumber = !isNaN(parseFloat(sum)) && isFinite(sum);
 		if (!isNumber || sum <= 0) {
@@ -106,22 +106,21 @@ class MobilePaymentContract extends Component {
 	 * Отправка формы
 	 * @param {Event} event событие отправки формы
 	 */
-	handleSubmit(event) {
+	onSubmitForm(event) {
 		if (event) {
 			event.preventDefault();
 		}
 
-		const {sum, phoneNumber, commission} = this.state;
-		const sumWithCommission = this.getSumWithCommission();
-		if (sumWithCommission <= 0) {
+		const { sum, phoneNumber, commission } = this.state;
+		const isNumber = !isNaN(parseFloat(sum)) && isFinite(sum);
+		if (!isNumber || sum === 0) {
 			return;
 		}
 
 		const activeCard = this.props.activeCard;
-		this._paymentService.payMobile(activeCard.id, sumWithCommission, phoneNumber)
+		this._paymentService.payMobile(activeCard.id, sum, phoneNumber)
 			.then(createdTransaction => {
-				// TODO: activeCard.balance = (activeCard.balance - sumWithCommission).toString();
-				this.props.onPaymentSuccess({sum, phoneNumber, commission, createdTransaction});
+				this.props.onPaymentSuccess({ sum, phoneNumber, commission });
 			});
 	}
 
@@ -129,12 +128,12 @@ class MobilePaymentContract extends Component {
 	 * Обработка изменения значения в input
 	 * @param {Event} event событие изменения значения input
 	 */
-	handleInputChange(event) {
+	onChangeInputValue(event) {
 		if (!event) {
 			return;
 		}
 
-		const {name, value} = event.target;
+		const { name, value } = event.target;
 
 		this.setState({
 			[name]: value
@@ -148,11 +147,11 @@ class MobilePaymentContract extends Component {
 	 * @returns {JSX}
 	 */
 	render() {
-		const {commission} = this.state;
+		const { commission } = this.state;
 
 		return (
 			<MobilePaymentLayout>
-				<form onSubmit={event => this.handleSubmit(event)}>
+				<form onSubmit={event => this.onSubmitForm(event)}>
 					<MobilePaymentTitle>Пополнить телефон</MobilePaymentTitle>
 					<InputField>
 						<Label>Телефон</Label>
@@ -166,7 +165,7 @@ class MobilePaymentContract extends Component {
 						<InputSum
 							name='sum'
 							value={this.state.sum}
-							onChange={event => this.handleInputChange(event)} />
+							onChange={event => this.onChangeInputValue(event)} />
 						<Currency>₽</Currency>
 					</InputField>
 					<InputField>
@@ -185,8 +184,7 @@ class MobilePaymentContract extends Component {
 
 MobilePaymentContract.propTypes = {
 	activeCard: PropTypes.shape({
-		id: PropTypes.number,
-		theme: PropTypes.object
+		id: PropTypes.number
 	}).isRequired,
 	onPaymentSuccess: PropTypes.func.isRequired
 };

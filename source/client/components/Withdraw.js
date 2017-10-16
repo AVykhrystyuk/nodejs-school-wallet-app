@@ -1,14 +1,15 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'emotion/react';
+import axios from 'axios';
 
-import {Card, Title, Button, Island, Input} from './';
+import { Card, Title, Button, Island, Input } from './';
 
-const WithdrawTitle = styled(Title)`
+const WithdrawTitle = styled(Title) `
 	text-align: center;
 `;
 
-const WithdrawLayout = styled(Island)`
+const WithdrawLayout = styled(Island) `
 	width: 440px;
 	display: flex;
 	flex-direction: column;
@@ -20,7 +21,7 @@ const InputField = styled.div`
 	position: relative;
 `;
 
-const SumInput = styled(Input)`
+const SumInput = styled(Input) `
 	max-width: 200px;
 	padding-right: 20px;
 	background-color: rgba(0, 0, 0, 0.08);
@@ -60,7 +61,7 @@ class Withdraw extends Component {
 			return;
 		}
 
-		const {name, value} = event.target;
+		const { name, value } = event.target;
 
 		this.setState({
 			[name]: value
@@ -76,14 +77,27 @@ class Withdraw extends Component {
 			event.preventDefault();
 		}
 
-		const {sum} = this.state;
+		const { selectedCard, sum } = this.state;
+		const { activeCard } = this.props;
 
 		const isNumber = !isNaN(parseFloat(sum)) && isFinite(sum);
 		if (!isNumber || sum <= 0) {
 			return;
 		}
 
-		this.setState({sum: 0});
+		const options = {
+			method: 'post',
+			url: `/cards/${activeCard.id}/transfer`,
+			data: {
+				target: selectedCard.id,
+				sum
+			}
+		};
+
+		axios(options).then(() => {
+			this.props.onTransaction();
+			this.setState({ sum: 0 });
+		});
 	}
 
 	/**
@@ -91,10 +105,10 @@ class Withdraw extends Component {
 	 * @returns {JSX}
 	 */
 	render() {
-		const {inactiveCardsList} = this.props;
+		const { inactiveCardsList } = this.props;
 
 		return (
-			<form onSubmit={(event) => this.onSubmitForm(event)}>
+			<form onSubmit={event => this.onSubmitForm(event)}>
 				<WithdrawLayout>
 					<WithdrawTitle>Вывести деньги на карту</WithdrawTitle>
 					<Card type='select' data={inactiveCardsList} />
@@ -102,7 +116,7 @@ class Withdraw extends Component {
 						<SumInput
 							name='sum'
 							value={this.state.sum}
-							onChange={(event) => this.onChangeInputValue(event)} />
+							onChange={event => this.onChangeInputValue(event)} />
 						<Currency>₽</Currency>
 					</InputField>
 					<Button type='submit'>Перевести</Button>
@@ -114,10 +128,10 @@ class Withdraw extends Component {
 
 Withdraw.propTypes = {
 	activeCard: PropTypes.shape({
-		id: PropTypes.number,
-		theme: PropTypes.object
+		id: PropTypes.number
 	}).isRequired,
-	inactiveCardsList: PropTypes.arrayOf(PropTypes.object).isRequired
+	inactiveCardsList: PropTypes.arrayOf(PropTypes.object).isRequired,
+	onTransaction: PropTypes.func.isRequired
 };
 
 export default Withdraw;

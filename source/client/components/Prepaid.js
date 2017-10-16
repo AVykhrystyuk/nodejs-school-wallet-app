@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import PrepaidContract from './PrepaidContract';
@@ -15,7 +15,7 @@ class Prepaid extends Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {stage: 'contract'};
+		this.state = { stage: 'contract' };
 	}
 
 	/**
@@ -23,6 +23,7 @@ class Prepaid extends Component {
 	 * @param {Object} transaction данные о транзакции
 	 */
 	onPaymentSuccess(transaction) {
+		this.props.onTransaction();
 		this.setState({
 			stage: 'success',
 			transaction
@@ -33,7 +34,7 @@ class Prepaid extends Component {
 	 * Повторить платеж
 	 */
 	repeatPayment() {
-		this.setState({stage: 'contract'});
+		this.setState({ stage: 'contract' });
 	}
 
 	/**
@@ -41,8 +42,8 @@ class Prepaid extends Component {
 	 * @returns {JSX}
 	 */
 	render() {
-		const {transaction} = this.state;
-		const {activeCard, inactiveCardsList} = this.props;
+		const { transaction } = this.state;
+		const { activeCard, inactiveCardsList } = this.props;
 
 		if (this.state.stage === 'success') {
 			return (
@@ -63,7 +64,8 @@ Prepaid.propTypes = {
 	activeCard: PropTypes.shape({
 		id: PropTypes.number
 	}).isRequired,
-	inactiveCardsList: PropTypes.arrayOf(PropTypes.object).isRequired
+	inactiveCardsList: PropTypes.arrayOf(PropTypes.object).isRequired,
+	onTransaction: PropTypes.func.isRequired
 };
 
 export default Prepaid;

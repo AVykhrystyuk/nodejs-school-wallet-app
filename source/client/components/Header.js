@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'emotion/react';
-import {Title, UserInfo} from './';
+import { Title, UserInfo } from './';
 
 const HeaderLayout = styled.header`
 	display: flex;
@@ -14,7 +14,7 @@ const HeaderLayout = styled.header`
 	border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 `;
 
-const Balance = styled(Title)`
+const Balance = styled(Title) `
 	margin: 0;
 `;
 
@@ -22,20 +22,24 @@ const BalanceSum = styled.span`
 	font-weight: bold;
 `;
 
-const Header = ({activeCard}) => (
+const Header = ({ activeCard, user }) => (
 	<HeaderLayout>
 		<Balance>
 			{`${activeCard.bankName}: `}
 			<BalanceSum>{`${activeCard.balance} ₽`}</BalanceSum>
 		</Balance>
-		<UserInfo />
+		<UserInfo user={user} />
 	</HeaderLayout>
 );
 
 Header.propTypes = {
 	activeCard: PropTypes.shape({
 		bankName: PropTypes.string.isRequired,
-		balance: PropTypes.string.isRequired
+		balance: PropTypes.number.isRequired
+	}),
+	user: PropTypes.shape({
+		login: PropTypes.string.isRequired,
+		name: PropTypes.string.isRequired
 	})
 };
 

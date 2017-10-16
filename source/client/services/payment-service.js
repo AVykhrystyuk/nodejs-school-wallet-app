@@ -2,9 +2,9 @@ import axios from 'axios';
 
 // eslint-disable-next-line
 export class PaymentService {
-	payMobile(cardId, amount, phoneNumber) {
+	payMobile(cardId, sum, phoneNumber) {
 		return axios.post(`/cards/${cardId}/pay`, {
-			amount,
+			sum,
 			phoneNumber
 		});
 	}

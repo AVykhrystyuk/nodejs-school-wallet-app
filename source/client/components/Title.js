@@ -5,11 +5,11 @@ import styled from 'emotion/react';
 const StyledTitle = styled.h2`
 	margin: 0 0 20px;
 	font-size: 24px;
-	font-weight: bold;
+	font-weight: 600;
 	color: #000;
 `;
 
-const Title = ({children, className}) => (
+const Title = ({ children, className }) => (
 	<StyledTitle className={className}>
 		{children}
 	</StyledTitle>

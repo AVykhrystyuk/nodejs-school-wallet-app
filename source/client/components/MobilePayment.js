@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import MobilePaymentContract from './MobilePaymentContract';
@@ -15,7 +15,7 @@ class MobilePayment extends Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {stage: 'contract'};
+		this.state = { stage: 'contract' };
 	}
 
 	/**
@@ -23,6 +23,7 @@ class MobilePayment extends Component {
 	 * @param {Object} transaction данные о транзакции
 	 */
 	onPaymentSuccess(transaction) {
+		this.props.onTransaction();
 		this.setState({
 			stage: 'success',
 			transaction
@@ -33,7 +34,7 @@ class MobilePayment extends Component {
 	 * Повторить платеж
 	 */
 	repeatPayment() {
-		this.setState({stage: 'contract'});
+		this.setState({ stage: 'contract' });
 	}
 
 	/**
@@ -43,7 +44,7 @@ class MobilePayment extends Component {
 	 * @returns {JSX}
 	 */
 	render() {
-		const {activeCard} = this.props;
+		const { activeCard } = this.props;
 
 		if (this.state.stage === 'success') {
 			return (
@@ -66,7 +67,8 @@ MobilePayment.propTypes = {
 	activeCard: PropTypes.shape({
 		id: PropTypes.number,
 		theme: PropTypes.object
-	}).isRequired
+	}).isRequired,
+	onTransaction: PropTypes.func.isRequired
 };
 
 export default MobilePayment;

@@ -10,17 +10,17 @@ const StyledButton = styled.button`
 	border: none;
 	border-radius: 3px;
 	cursor: pointer;
-	background-color: ${({bgColor}) => bgColor || 'rgba(0, 0, 0, 0.05)'};
-	color: ${({textColor}) => textColor || 'rgba(0, 0, 0, 0.65)'};
+	background-color: ${({ bgColor }) => bgColor};
+	color: ${({ textColor }) => textColor};;
 
 	&:focus,
 	&:hover {
-		color: ${({textColor}) => textColor || 'rgba(0, 0, 0, 0.65)'};
-		background-color: ${({bgColor}) => bgColor || 'rgba(0, 0, 0, 0.05)'};
+		background-color: ${({ bgColor }) => bgColor};
+		color: ${({ textColor }) => textColor};
 	}
 `;
 
-const Button = ({bgColor, textColor, children, className}) => (
+const Button = ({ bgColor, textColor, children, className }) => (
 	<StyledButton bgColor={bgColor} textColor={textColor} className={className}>
 		{children}
 	</StyledButton>
@@ -31,6 +31,11 @@ Button.propTypes = {
 	textColor: PropTypes.string,
 	children: PropTypes.node,
 	className: PropTypes.string
+};
+
+Button.defaultProps = {
+	bgColor: 'rgba(0, 0, 0, 0.05)',
+	textColor: 'rgba(0, 0, 0, 0.65)'
 };
 
 export default Button;
