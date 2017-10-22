@@ -4,7 +4,12 @@ const Koa = require('koa');
 const serve = require('koa-static');
 const router = require('koa-router')();
 const bodyParser = require('koa-bodyparser')();
+const enforceHttps = require('koa-sslify');
+
+const path = require('path');
 const fs = require('fs');
+const http = require('http');
+const https = require('https');
 
 const logger = require('./libs/logger')('waller-app');
 
@@ -36,6 +41,13 @@ const CardsRepository = require('./repositories/cards');
 const TransactionsRepository = require('./repositories/transactions');
 
 const server = new Koa();
+
+const httpPort = process.env.PORT || 3030;
+const httpsPort = httpPort ? httpPort + 1 : 443;
+
+server.use(enforceHttps({
+	port: httpsPort
+}));
 
 router.param('id', (id, ctx, next) => next());
 
@@ -88,8 +100,17 @@ server.use(bodyParser);
 server.use(router.routes());
 server.use(serve('./build'));
 
-const port = process.env.PORT || 3000;
-server.listen(port, () => {
-	const url = `http://localhost:${port}`;
-	logger.log('info', `Server is listening on port ${port} (${url})`);
+http.createServer(server.callback()).listen(httpPort, () => {
+	logger.log('info', `HttpServer is listening on port ${httpPort} - http://localhost:${httpPort}`);
+});
+
+const tlsRoot = path.join.bind(path, __dirname, 'tls');
+const privateKey = fs.readFileSync(tlsRoot('key.pem')).toString();
+const certificate = fs.readFileSync(tlsRoot('cert.pem')).toString();
+const sslOptions = {
+	key: privateKey,
+	cert: certificate
+};
+https.createServer(sslOptions, server.callback()).listen(httpsPort, () => {
+	logger.log('info', `HttpsServer is listening on port ${httpsPort} - https://localhost:${httpsPort}`);
 });
