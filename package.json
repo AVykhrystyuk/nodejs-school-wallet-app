@@ -5,10 +5,12 @@
   "author": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "concurrently --kill-others 'npm run build-server' 'npm run build-client'",
-    "build-server": "nodemon --watch source ./source/server/server.js",
-    "build-server:prod": "node ./source/server/server.js",
-    "build-client": "webpack -w --config ./config/webpack.config.js",
+    "start": "concurrently --kill-others 'npm run node:dev' 'npm run build-client:dev'",
+	"start:https": "NODE_HTTPS=1 npm start",
+	"tls:generate": "sh ./scripts/generate-tls-certificate.sh",
+	"node:dev": "nodemon --watch source ./source/server/server.js",
+    "node:prod": "node ./source/server/server.js",
+    "build-client:dev": "webpack -w --config ./config/webpack.config.js",
     "build-client:prod": "webpack --env.production --config ./config/webpack.config.js"
   },
   "repository": {
